@@ -17,7 +17,6 @@ const postMember = async (req, res = response) => {
 };
 
 const putMember = async (req, res = response) => {
-  const { id } = req.params;
   const { _id, email, ...rest } = req.body;
 
   const member = await Member.findOneAndUpdate({ email }, rest).exec();
