@@ -1,7 +1,7 @@
 import { response } from 'express';
 import moment from 'moment/moment.js';
 import mongoose from 'mongoose';
-import { getAllCandidates, getAllReviewers, getAssingationRule } from '../helpers/getters.js';
+import { getAllMembers, getAllReviewers } from '../helpers/getters.js';
 import Reviewer from '../models/reviewer.js';
 import Revision from '../models/revision.js';
 
@@ -100,16 +100,16 @@ const getAllAsigns = async (req, res = response) => {
   });
 };
 
-const saveAssignments = async (candidates, reviewerID, reviewerObject) => {
+const saveAssignments = async (members, reviewerID, reviewerObject) => {
   try {
-    if (!candidates || !reviewerID) return;
+    if (!members || !reviewerID) return;
     const today = moment().startOf('day').toDate();
     const reviewer = new mongoose.Types.ObjectId(reviewerID);
     const existAssignment = await Revision.findOne({ reviewerID: reviewer, date: today }).exec();
 
     if (existAssignment) return false;
 
-    const revision = new Revision({ date: today, reviewerID: reviewer, candidates, reviewer: reviewerObject });
+    const revision = new Revision({ date: today, reviewerID: reviewer, members, reviewer: reviewerObject });
 
     await revision.save();
     return true;
@@ -123,23 +123,34 @@ const getTodayRevision = async (req, res = response) => {
     array.sort(() => Math.random() - 0.5);
   }
 
-  const { candidates } = await getAllCandidates();
+  const { members } = await getAllMembers();
   const { reviewers } = await getAllReviewers();
+  if (members === undefined || members === null || members.length === 0) {
+    return res.json({
+      msg: 'Get random assignments API - No members to assign - controller',
+      assignments: {},
+    });
+  }
+  if (reviewers === undefined || reviewers === null || reviewers.length === 0) {
+    return res.json({
+      msg: 'Get random assignments API - No reviewers to assign - controller',
+      assignments: {},
+    });
+  }
+  const candidatesPerReviewer = members.length / reviewers.length;
+  const candidatesOffset = members.length % reviewers.length;
 
-  const candidatesPerReviewer = candidates.length / reviewers.length;
-  const candidatesOffset = candidates.length % reviewers.length;
+  shuffle(members);
+  // shuffle(reviewers);
 
-  shuffle(candidates);
-  shuffle(reviewers);
-
-  getAssingationRule();
+  // getAssingationRule();
 
   let candidatesFrom = 0;
   let candidatesTo = candidatesPerReviewer;
   const assignments = await Promise.all(
     reviewers.map(async (reviewer) => {
       if (candidatesOffset > 0) {
-        const candidatesToAssign = candidates.slice(candidatesFrom, candidatesTo + 1);
+        const candidatesToAssign = members.slice(candidatesFrom, candidatesTo + 1);
         candidatesFrom += candidatesPerReviewer + 1;
         candidatesTo += candidatesPerReviewer + 1;
         const isSaved = await saveAssignments(candidatesToAssign, reviewer.id, reviewer);
@@ -152,7 +163,7 @@ const getTodayRevision = async (req, res = response) => {
           };
         }
       }
-      const candidatesToAssign = candidates.slice(candidatesFrom, candidatesTo);
+      const candidatesToAssign = members.slice(candidatesFrom, candidatesTo);
       candidatesFrom += candidatesPerReviewer;
       candidatesTo += candidatesPerReviewer;
       const isSaved = await saveAssignments(candidatesToAssign, reviewer.id, reviewer);
@@ -165,7 +176,7 @@ const getTodayRevision = async (req, res = response) => {
         };
       }
       const today = moment().startOf('day').toDate();
-      const { candidates: cands } = await Revision.findOne({
+      const { members: cands } = await Revision.findOne({
         reviewerID: new mongoose.Types.ObjectId(reviewer.id),
         date: today,
       }).exec();

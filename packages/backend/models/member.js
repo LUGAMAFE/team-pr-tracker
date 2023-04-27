@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 
-const CandidateSchema = Schema({
+const MemberSchema = Schema({
   name: {
     type: String,
     required: [true, 'El nombre es obligatorio'],
@@ -13,9 +13,9 @@ const CandidateSchema = Schema({
 });
 
 // Return the whole object but the  __v attributes
-CandidateSchema.methods.toJSON = function () {
+MemberSchema.methods.toJSON = function () {
   const { __v, ...candidateRest } = this.toObject();
   return candidateRest;
 };
 
-export default model('Candidate', CandidateSchema);
+export default model('Member', MemberSchema);

@@ -13,12 +13,12 @@ export const SideBar = () => {
   useEffect(() => {
     (async () => {
       // FIXME: leer el todo numero 2 de la raíz del proyecto
-      const endPoint = import.meta.env.VITE_REACT_APP_REST_API + '/students/getAll';
+      const endPoint = import.meta.env.VITE_REACT_APP_REST_API + '/members/getAll';
       const response = await fetch(endPoint, { method: 'GET', headers: { 'Content-Type': 'aplication/json' } });
       const data = await response.json();
-      const { students } = data;
-      console.log(students);
-      setStudents(students);
+      const { members } = data;
+      console.log(members);
+      setStudents(members);
     })();
   }, []);
 

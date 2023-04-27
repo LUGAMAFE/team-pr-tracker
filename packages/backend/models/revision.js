@@ -17,7 +17,7 @@ const RevisionSchema = Schema({
     },
     required: [true, 'El ID del reclutador es obligatorio'],
   },
-  candidates: {
+  members: {
     type: [
       {
         id: { type: ObjectId },

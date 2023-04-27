@@ -13,6 +13,7 @@ export const ReviewersTable = () => {
         const assignmentsPath = import.meta.env.VITE_REACT_APP_REST_API + '/reviewers/getTodayAssignation';
         const response = await fetch(assignmentsPath);
         const { assignments } = await response.json();
+        console.log('assignment', assignments);
         // FIXME: la deseestructuración de assignments es innecesaria ya que map regresa un arreglo, y al hacer esto metes un arreglo dentro de otro arreglo
         // FIXME: por que los reviewers siempre están en desorden? deberían de estar ordenados por nombre.
         setReviewItems(() => [
