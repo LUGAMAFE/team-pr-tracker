@@ -14,29 +14,20 @@ const StyledIconButton = styled(IconButton)({
 
 export const RollMembers = () => {
   const queryClient = useQueryClient();
-  const { status, mutate } = useMutation(rollMembers, {
+  const { mutate } = useMutation(rollMembers, {
     onSuccess: () => {
       queryClient.invalidateQueries(['reviewers']);
     },
   });
-  const onDelete = async () => {
+  const roll = async () => {
     try {
-      if (status === 'loading') {
-        return <div>Cargando los datos de los reviewers.</div>;
-      }
-
-      if (status === 'error') {
-        return <div>Error al cargar los datos de los reviewers</div>;
-      }
       mutate();
-
-      // FIXME: solo se debería eliminar el usuario que se elimino del array de estudiante del contexto
     } catch (e) {
       console.log('error on submit ', e);
     }
   };
   return (
-    <StyledIconButton onClick={onDelete} size="large">
+    <StyledIconButton onClick={roll} size="large">
       <Autorenew />
     </StyledIconButton>
   );

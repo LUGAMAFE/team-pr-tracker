@@ -1,15 +1,13 @@
 import { ArrowBack, SaveOutlined } from '@mui/icons-material';
 import { Button, FormControl, Grid, TextField, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import { addMember, addReviewer } from '../../utils/fetch';
 import { ComponentButton } from '../common/ComponentButton';
-import { ReviewerContext } from '../context/ReviewerContext';
 
 const AddUserInput = ({ user }) => {
-  const { onAddReviewer, onAddMember } = useContext(ReviewerContext);
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -31,28 +29,24 @@ const AddUserInput = ({ user }) => {
   });
   const onSubmit = async (event) => {
     try {
-      if (!form.name) {
-        throw new Error('El nombre no puede estar vacío');
-      }
       event.preventDefault();
-      if (status === 'loading') {
-        return <div>Cargando los datos de los reviewers.</div>;
-      }
-
-      if (status === 'error') {
-        return <div>Error al cargar los datos de los reviewers</div>;
-      }
-      mutate(form);
-
-      if (!isSuccess) {
-        if (user === 'reviewer') {
-          onAddReviewer(form);
-        } else if (user === 'member') {
-          onAddMember(form);
-        }
-        navigate('/');
+      if (!form.name || !form.email) {
+        throw new Error('El nombre no puede estar vacío');
       } else {
-        throw new Error(`Hubo un problema al agregar el ${user}.`);
+        if (status === 'loading') {
+          return <div>Cargando los datos de los reviewers.</div>;
+        }
+
+        if (status === 'error') {
+          return <div>Error al cargar los datos de los reviewers</div>;
+        }
+        mutate(form);
+
+        if (!isSuccess) {
+          navigate('/');
+        } else {
+          throw new Error(`Hubo un problema al agregar el ${user}.`);
+        }
       }
     } catch (e) {
       console.log('error on submit ', e);
