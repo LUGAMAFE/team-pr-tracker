@@ -18,29 +18,21 @@ const StyledIconBox = styled(Box)({
 });
 
 const ReviewerItem = ({ name, email, members = [] }) => {
-  const queryClient = useQueryClient(); // Move inside the component
+  const queryClient = useQueryClient();
 
-  const { status, mutate } = useMutation(deleteReviewer, {
+  const { mutate } = useMutation(deleteReviewer, {
     onSuccess: () => {
       queryClient.invalidateQueries(['reviewers']);
     },
   });
   const onDelete = async () => {
     try {
-      if (status === 'loading') {
-        return <div>Cargando los datos de los reviewers.</div>;
-      }
-
-      if (status === 'error') {
-        return <div>Error al cargar los datos de los reviewers</div>;
-      }
       mutate(email);
-
-      // FIXME: solo se debería eliminar el usuario que se elimino del array de estudiante del contexto
     } catch (e) {
       console.log('error on submit ', e);
     }
   };
+  const prefixListMembers2 = 'list2_';
   return (
     <Grid
       item
@@ -60,7 +52,7 @@ const ReviewerItem = ({ name, email, members = [] }) => {
 
       <List sx={{ background: 'white', borderRadius: 3, margin: 1 }}>
         {members.map((member) => (
-          <ListItem key={member.id} disablePadding>
+          <ListItem key={prefixListMembers2 + member.id} disablePadding>
             <ListItemButton>
               <ListItemIcon>
                 <PersonOutline sx={{ color: 'primary.main' }} />

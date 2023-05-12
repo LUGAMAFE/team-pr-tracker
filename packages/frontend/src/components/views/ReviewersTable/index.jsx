@@ -1,5 +1,5 @@
 import { AddOutlined } from '@mui/icons-material';
-import { Box, Grid, styled } from '@mui/material';
+import { Alert, Box, Grid, styled } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { fetchReviewers } from '../../../utils/fetch';
@@ -27,35 +27,45 @@ const StyledGrid = styled(Grid)({
 export const ReviewersTable = () => {
   const [reviewItems, setReviewItems] = useState([]);
 
-  const { data, status } = useQuery(['reviewers'], fetchReviewers);
-
+  const { data, status } = useQuery(['reviewers', 5], fetchReviewers);
   useEffect(() => {
     if (data && data.revisions) {
       const reviewers = data.revisions
-        .map(({ reviewer, members }) => ({
-          id: reviewer.id,
-          name: reviewer.name,
-          email: reviewer.email,
-          members: members,
-        }))
-        .sort((a, b) => a.name.localeCompare(b.name));
+        .filter((assignment) => {
+          if (assignment.reviewer == null) return false;
+          return true;
+        })
+        .map((assignment) => ({
+          id: assignment.reviewer?._id,
+          name: assignment.reviewer?.name,
+          email: assignment.reviewer?.email,
+          members: assignment.members,
+        }));
+      if (reviewers !== null) {
+        reviewers.sort((a, b) => a.name?.localeCompare(b.name));
+      }
       setReviewItems(reviewers);
     }
-  }, [data]);
+  }, [data, setReviewItems]);
 
   if (status === 'loading') {
     return <div className="loader">Loading...</div>;
   }
 
   if (status === 'error') {
-    return <div>Error al cargar los datos de los reviewers</div>;
+    return <Alert severity="error">Error al cargar los reviewers</Alert>;
   }
 
   return (
     <StyledBox>
       <StyledGrid container>
-        {reviewItems.map((reviewer) => (
-          <ReviewerItem key={reviewer.id} name={reviewer.name} email={reviewer.email} members={reviewer.members} />
+        {reviewItems.map((reviewer, index) => (
+          <ReviewerItem
+            key={`${index} ${reviewer.id}`}
+            name={reviewer.name}
+            email={reviewer.email}
+            members={reviewer.members}
+          />
         ))}
 
         <ComponentButton route={'/add-reviewer'} right={20} bottom={37}>
