@@ -30,16 +30,19 @@ const postTodayRevision = async (req, res = response) => {
   const startTimestamp = today.toDate();
   const endTimestamp = today.endOf('day').toDate();
 
-  const revision = await Revision.findOne({
+  const revisions = await Revision.find({
     date: {
       $gte: startTimestamp,
       $lte: endTimestamp,
     },
   });
 
-  if (revision) {
-    return res.status(400).send({
-      msg: 'There is already a revision assigned for today',
+  if (revisions) {
+    await Revision.deleteMany({
+      date: {
+        $gte: startTimestamp,
+        $lte: endTimestamp,
+      },
     });
   }
 
