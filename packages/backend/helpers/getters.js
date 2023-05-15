@@ -1,8 +1,8 @@
-import moment from 'moment/moment.js';
 import { existsSync } from 'node:fs';
 import Member from '../models/member.js';
 import Reviewer from '../models/reviewer.js';
 import Revision from '../models/revision.js';
+import { formattedMoment } from './utils.js';
 
 const getAllMembers = async () => {
   const membersResult = await Member.find();
@@ -34,7 +34,7 @@ const getAssingationRule = async () => {
   const lastAssignmentsDetailed = [];
 
   for (let i = 0; i < NUMBER_REVIEWERS; i++) {
-    const dayOfInterest = moment()
+    const dayOfInterest = formattedMoment()
       .subtract(i + 1, 'days')
       .startOf('day')
       .toDate();
