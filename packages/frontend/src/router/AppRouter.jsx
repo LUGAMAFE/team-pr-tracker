@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
-import UserInputForm from '../components/views/AddUserInput';
-import { ReviewersTable } from '../components/views/ReviewersTable';
+import UserInputForm from '../views/AddUserInput/AddUserInput';
+import ReviewersTable from '../views/ReviewersTable';
 
 const AppRouter = () => {
   return (

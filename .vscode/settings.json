@@ -24,6 +24,8 @@
   "cSpell.language": "en,es-ES",
   "cSpell.enabled": true,
   "cSpell.words": [
+    "Autorenew",
+    "dayjs",
     "deseestructuración",
     "lugamafe",
     "middlewares",
@@ -31,6 +33,7 @@
     "refactorizar",
     "reutilizable",
     "settear",
+    "tanstack",
     "volta"
   ],
   "todo-tree.highlights.defaultHighlight": {
