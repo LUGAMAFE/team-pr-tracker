@@ -1,8 +1,10 @@
 import cors from 'cors';
 import express from 'express';
 import dbConnection from '../db/config.js';
-import candidateRoute from '../routes/candidates.js';
+import { scheduleAssignation } from '../helpers/schedule.js';
+import candidateRoute from '../routes/members.js';
 import reviewerRoute from '../routes/reviewers.js';
+import revisionRoute from '../routes/revisions.js';
 
 class Server {
   constructor() {
@@ -15,20 +17,24 @@ class Server {
     // Middlewares
     this.middlewares();
 
-    // Rutas de mi app
+    // Schedule Job
+    scheduleAssignation();
+
+    // App Routes
     this.routes();
   }
 
   routes() {
     this.app.use('/api/reviewers', reviewerRoute);
-    this.app.use('/api/candidates', candidateRoute);
+    this.app.use('/api/members', candidateRoute);
+    this.app.use('/api/revisions', revisionRoute);
   }
 
   middlewares() {
     this.app.use(express.static('public'));
     this.app.use(cors());
 
-    // Lectura y parseo
+    // Lecture and parse of the body
     this.app.use(express.json());
   }
 
@@ -38,7 +44,7 @@ class Server {
 
   listen() {
     this.app.listen(this.port, () => {
-      console.log('servidor corriento en puerto ', this.port);
+      console.log('Server running on port: ', this.port);
     });
   }
 }
