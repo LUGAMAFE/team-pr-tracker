@@ -1,18 +1,18 @@
 import moment from 'moment/moment.js';
 import { existsSync } from 'node:fs';
-import Candidate from '../models/candidate.js';
+import Member from '../models/member.js';
 import Reviewer from '../models/reviewer.js';
 import Revision from '../models/revision.js';
 
-const getAllCandidates = async () => {
-  const candidatesResult = await Candidate.find();
-  const candidates = [...candidatesResult].map((cand) => {
-    const { _id, name, email } = cand;
+const getAllMembers = async () => {
+  const membersResult = await Member.find();
+  const members = [...membersResult].map((member) => {
+    const { _id, name, email } = member;
     const id = _id.toString();
     return { name, email, id };
   });
   return {
-    candidates,
+    members,
   };
 };
 
@@ -42,14 +42,14 @@ const getAssingationRule = async () => {
 
     const assignments = assignmentInfo.map((assign) => ({
       reviewer: assign.reviewer.name,
-      candidates: assign.candidates.length,
+      members: assign.members.length,
     }));
     if (assignments.length > 0) {
       lastAssignmentsDetailed.push({
         date: dayOfInterest,
         assignments: assignmentInfo.map((assign) => ({
           reviewer: assign.reviewer.name,
-          candidates: assign.candidates.length,
+          members: assign.members.length,
         })),
       });
     }
@@ -66,4 +66,4 @@ const SaveJsonFile = () => {
   }
 };
 
-export { getAllCandidates, getAllReviewers, getAssingationRule };
+export { getAllMembers, getAllReviewers, getAssingationRule };

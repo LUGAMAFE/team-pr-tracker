@@ -1,4 +1,3 @@
-import { ObjectId } from 'mongodb';
 import { Schema, model } from 'mongoose';
 
 const RevisionSchema = Schema({
@@ -6,26 +5,28 @@ const RevisionSchema = Schema({
     type: Date,
     required: [true, 'La fecha de creación es obligatoria'],
   },
-  reviewerID: {
-    type: ObjectId,
-  },
   reviewer: {
-    type: {
-      id: { type: ObjectId },
-      name: { type: String },
-      email: { type: String },
-    },
-    required: [true, 'El ID del reclutador es obligatorio'],
+    type: Schema.Types.ObjectId,
+    ref: 'Reviewer',
+    required: [true, 'Reviewer ID is mandatory'],
   },
-  candidates: {
+  members: {
     type: [
       {
-        id: { type: ObjectId },
-        name: { type: String },
-        email: { type: String },
+        type: Schema.Types.ObjectId,
+        ref: 'Member',
       },
     ],
     required: false,
+  },
+});
+
+//Overwritting the schema to remove __v attribute for tojson() method
+RevisionSchema.set('toJSON', {
+  versionKey: false,
+  transform: function (doc, ret) {
+    delete ret.__v;
+    return ret;
   },
 });
 
